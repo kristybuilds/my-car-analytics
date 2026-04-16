@@ -1,0 +1,25 @@
+config {
+  type: "table",
+  schema: "silver",
+  description: "Cleaned EV registration data for Malaysia.",
+  assertions: {
+    nonNull: ["date_reg", "state", "maker", "model"]
+  }
+}
+
+SELECT 
+    GENERATE_UUID() as id,
+    SAFE_CAST(date_reg AS DATE) AS registration_date,
+    EXTRACT(YEAR FROM SAFE_CAST(date_reg AS DATE)) AS reg_year,
+    EXTRACT(MONTH FROM SAFE_CAST(date_reg AS DATE)) AS reg_month,
+    SAFE.DATE_TRUNC(SAFE_CAST(date_reg AS DATE), MONTH) AS registration_period,
+
+    -- Geographic & brand data
+    TRIM(state) AS state,
+    TRIM(maker) AS brand,
+    TRIM(model) AS model,
+    
+    -- Metadata for tracking
+    CURRENT_TIMESTAMP AS silver_processed_at
+FROM ${ref("cars_all")}
+WHERE LOWER(fuel) = 'electric';

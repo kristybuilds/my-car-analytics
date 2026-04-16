@@ -1,0 +1,48 @@
+config {
+  type: "table",
+  schema: "gold",
+  description: "State-level EV readiness metrics comparing vehicle volume to charging infrastructure.",
+  assertions: {
+    nonNull: ["state"]
+  }
+}
+
+WITH latest_cars AS (
+    SELECT 
+        state,
+        -- This grabs the date of the absolute last registration for the label
+        MAX(report_month) AS car_data_as_of, 
+        -- This counts EVERY car in the silver_cars_ev table for that state
+        COUNT(*) AS total_bevs 
+    FROM ${("silver_cars_ev")}
+    GROUP BY state
+),
+charger_stats AS (
+    SELECT 
+        state,
+        SUM(existing_plugs) AS active_plugs,
+        SUM(ac_plugs) AS total_ac_plugs,
+        SUM(dc_plugs) AS total_dc_plugs,
+        COUNT(location_name) AS charging_locations
+    FROM ${ref("silver_ev_chargers")}  
+    WHERE is_operational = TRUE
+    GROUP BY 1
+)
+SELECT 
+    c.state,
+    c.car_data_as_of,
+    c.total_bevs,
+    COALESCE(i.active_plugs, 0) AS total_active_plugs,
+    COALESCE(i.total_ac_plugs, 0) AS total_ac_plugs,
+    COALESCE(i.total_dc_plugs, 0) AS total_dc_plugs,
+    COALESCE(i.charging_locations, 0) AS total_charging_locations,
+    
+    -- Metric: EVs per Plug (Quantity)
+    SAFE_DIVIDE(c.total_bevs, i.active_plugs) AS ev_per_plug_ratio,
+
+    -- Metadata for tracking
+    CURRENT_TIMESTAMP AS gold_processed_at
+  
+FROM latest_cars c
+LEFT JOIN charger_stats i ON c.state = i.state
+ORDER BY ev_per_plug_ratio DESC;

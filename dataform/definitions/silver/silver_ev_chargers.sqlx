@@ -1,0 +1,62 @@
+config {
+  type: "table",
+  schema: "silver",
+  description: "Aggregation of ev chargers by location.",
+  assertions: {
+    nonNull: ["location_name", "state", "latitude", "longitude"]
+  },
+  tags: ["silver"]
+}
+
+WITH raw_chargers AS (
+    SELECT 
+        TRIM(location) AS location_name,
+        -- Standardizing state for easier joins later (e.g., INITCAP)
+        INITCAP(LOWER(TRIM(state))) AS state,
+        status,
+        TRIM(category) AS location_category,
+        SAFE_CAST(NULLIF(longitude, '0') AS FLOAT64) AS longitude,
+        SAFE_CAST(NULLIF(latitude, '0') AS FLOAT64) AS latitude,
+        SAFE.PARSE_DATE('%d-%b-%y', NULLIF(data_as, '0')) AS date_added,
+        
+        COALESCE(SAFE_CAST(number_of_existing_ev_charger_s AS INT64), 0) AS existing_plugs,
+        COALESCE(SAFE_CAST(number_of_proposed_ev_charger__ AS INT64), 0) AS proposed_plugs,
+
+        COALESCE(SAFE_CAST(type_ac AS INT64), 0) AS ac_plugs,
+        COALESCE(SAFE_CAST(type_dc AS INT64), 0) AS dc_plugs
+
+    FROM ${ref("mevnet_chargers")}
+)
+SELECT 
+    *,
+    -- Total capacity
+    (existing_plugs + proposed_plugs) AS total_planned_plugs,
+    
+    -- Operational Status
+    CASE 
+        WHEN status = 'Existing' THEN TRUE 
+        ELSE FALSE 
+    END AS is_operational,
+
+    -- Data Quality / Speed Category
+    -- This handles 'too many nulls' concern by creating a useful flag
+    CASE 
+        WHEN dc_plugs > 0 AND ac_plugs > 0 THEN 'AC & DC'
+        WHEN dc_plugs > 0 THEN 'DC'
+        WHEN ac_plugs > 0 THEN 'AC'
+        ELSE 'Unknown/Unspecified'
+    END AS charging_speed_category,
+
+    -- Simplified Category for the dashboard
+    CASE 
+        WHEN location_category IN ('Shopping Mall', 'Galleria') THEN 'Retail'
+        WHEN location_category IN ('Hotel & Resort', 'Theme Park', 'Recreation Center') THEN 'Hospitality/Leisure'
+        WHEN location_category LIKE 'Petrol Station%' THEN 'Refueling'
+        ELSE 'Public/Other'
+    END AS simplified_category,
+
+    -- Metadata for tracking
+    CURRENT_TIMESTAMP AS silver_processed_at
+    
+FROM raw_chargers
+WHERE longitude IS NOT NULL AND latitude IS NOT NULL;
