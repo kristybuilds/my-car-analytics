@@ -1,0 +1,35 @@
+config {
+  type: "table",
+  schema: "gold",
+  description: "Market share and rankings by state, fuel tier, and vehicle category.",
+  assertions: {
+    nonNull: ["reg_year", "state", "brand", "model", "fuel"]
+  }
+}
+
+SELECT 
+    state,
+    reg_year,
+    brand,
+    model,
+    vehicle_category,
+    fuel,
+    sustainability_tier,
+    SUM(unit_count) AS units,
+
+    -- 1. TOTAL MARKET: Share within the state/year
+    ROUND(SAFE_DIVIDE(SUM(unit_count) * 100, SUM(SUM(unit_count)) OVER (PARTITION BY state, reg_year)), 4) AS state_market_share_pct,
+
+    -- 2. SUSTAINABILITY SHARE: Share within its tier (e.g., Tesla's share of 'Green' cars)
+    ROUND(SAFE_DIVIDE(SUM(unit_count) * 100, SUM(SUM(unit_count)) OVER (PARTITION BY state, reg_year, sustainability_tier)), 2) AS tier_segment_share_pct,
+
+    -- 3. CATEGORY SHARE: Share within utility type (e.g., BYD Atto 3's share of all SUVs)
+    ROUND(SAFE_DIVIDE(SUM(unit_count) * 100, SUM(SUM(unit_count)) OVER (PARTITION BY state, reg_year, vehicle_category)), 2) AS category_share_pct,
+
+    -- 4. RANKINGS (Fixed missing comma and using Window Functions)
+    DENSE_RANK() OVER (PARTITION BY state, reg_year, sustainability_tier ORDER BY SUM(unit_count) DESC) AS rank_in_tier,
+    DENSE_RANK() OVER (PARTITION BY state, reg_year, vehicle_category ORDER BY SUM(unit_count) DESC) AS rank_in_category,
+    DENSE_RANK() OVER (PARTITION BY state, reg_year, fuel ORDER BY SUM(unit_count) DESC) AS rank_in_fuel_type
+
+FROM ${ref("silver_cars_master")}
+GROUP BY 1, 2, 3, 4, 5, 6, 7;

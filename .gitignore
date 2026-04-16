@@ -1,0 +1,22 @@
+# Python Environment
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local data for testing
+tests/
+
+# Sensitive Files (CRITICAL)
+credentials.json
+.env
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+# Note: If you named your var file terraform.tfvars, it is covered above.
+
+# OS files
+.DS_Store

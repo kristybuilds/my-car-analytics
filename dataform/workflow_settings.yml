@@ -1,0 +1,7 @@
+defaultProjectConfig:
+  defaultDatabase: malaysia-ev-analysis
+  defaultLocation: asia-southeast1
+  defaultSchema: silver
+  assertionSchema: dataform_assertions
+
+dataformCoreVersion: 3.0.0-beta.4

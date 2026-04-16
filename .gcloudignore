@@ -1,0 +1,16 @@
+# Python Environment
+venv/
+__pycache__/
+
+# Version Control
+.git/
+.gitignore
+
+# Sensitive Files (Specific instead of *.json)
+credentials.json
+.env
+
+# Terraform files (No need to send these to Cloud Run)
+.terraform/
+terraform/
+*.tfstate

@@ -1,0 +1,6 @@
+{
+  "name": "malaysia-ev-analysis",
+  "dependencies": {
+    "@dataform/core": "3.0.0-beta.4"
+  }
+}

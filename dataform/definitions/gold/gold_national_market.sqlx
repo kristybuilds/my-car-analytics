@@ -1,0 +1,36 @@
+config {
+  type: "table",
+  schema: "gold",
+  description: "National market share based on fuel tier, and vehicle category.",
+  assertions: {
+    nonNull: ["reg_year", "brand", "model", "fuel", "vehicle_category"]
+  }
+}
+
+SELECT 
+    reg_year,
+    brand,
+    model,
+    sustainability_tier,
+    fuel,
+    vehicle_category,
+    SUM(unit_count) AS units,
+
+    -- 1. National Market Share (e.g., 0.2% of all cars sold in Malaysia that year)
+    ROUND(SAFE_DIVIDE(SUM(unit_count) * 100, SUM(SUM(unit_count)) OVER (PARTITION BY reg_year)), 4) AS national_share_pct,
+
+    -- 2. National Rank in Tier (e.g., Is Tesla #1 in 'Green' nationally?)
+    DENSE_RANK() OVER (
+        PARTITION BY reg_year, sustainability_tier 
+        ORDER BY SUM(unit_count) DESC
+    ) AS national_rank_in_tier,
+
+    -- 3. National Rank in Category (e.g. Who is the #1 National SUV?)
+    DENSE_RANK() OVER (
+        PARTITION BY reg_year, vehicle_category 
+        ORDER BY SUM(unit_count) DESC
+    ) AS national_rank_in_category
+    
+FROM ${ref("silver_cars_master")}
+GROUP BY 1, 2, 3, 4, 5, 6
+ORDER BY reg_year DESC, units DESC;
