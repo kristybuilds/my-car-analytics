@@ -7,7 +7,7 @@ __pycache__/
 # Local data for testing
 tests/
 
-# Sensitive Files (CRITICAL)
+# Sensitive files (CRITICAL)
 credentials.json
 .env
 
@@ -20,3 +20,6 @@ credentials.json
 
 # OS files
 .DS_Store
+
+# Airflow files
+airflow/logs/
