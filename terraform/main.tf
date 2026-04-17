@@ -255,3 +255,20 @@ resource "google_service_account_iam_member" "dataform_token_creator" {
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
 }
+
+# Grant BigQuery Job User at the Project Level
+resource "google_project_iam_member" "dataform_job_user" {
+  project = var.project_id
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${google_service_account.dataform_executor.email}"
+}
+
+# Grant Data Editor on each specific dataset
+# You can use a loop to make this cleaner
+resource "google_bigquery_dataset_iam_member" "dataform_dataset_editor" {
+  for_each   = toset(["bronze", "silver", "gold", "dataform_assertions"])
+  project    = var.project_id
+  dataset_id = each.key
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_service_account.dataform_executor.email}"
+}
