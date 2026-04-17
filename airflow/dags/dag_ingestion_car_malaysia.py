@@ -1,10 +1,16 @@
 import os
 from airflow import DAG
 from airflow.providers.google.cloud.operators.cloud_run import CloudRunExecuteJobOperator
+from airflow.providers.google.cloud.operators.dataform import (
+    DataformCreateCompilationResultOperator,
+    DataformCreateWorkflowInvocationOperator,
+)
 from datetime import datetime, timedelta
 
 GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
-GCP_GCS_BUCKET = os.environ.get('GCP_GCS_BUCKET')
+GCP_GCS_BUCKET = os.environ.get("GCP_GCS_BUCKET")
+DATAFORM_REGION = os.environ.get("DATAFORM_REGION")
+DATAFORM_REPOSITORY_ID = os.environ.get("DATAFORM_REPOSITORY_ID") # Update this! "your-dataform-repo-name"
 
 # 1. DEFAULT ARGUMENTS
 # This defines how Airflow behaves if a task fails
@@ -26,7 +32,7 @@ with DAG(
     schedule='0 0 1 * *',  # Runs every first day of the month
     start_date=datetime(2026, 1, 1),
     catchup=False,
-    tags=['ev_analysis', 'bronze'],
+    tags=['ev_analysis', 'bronze', 'silver', 'gold'],
 ) as dag:
 
     # 3. TASK 1: RUN CAR INGESTION
@@ -34,7 +40,7 @@ with DAG(
     run_car_job = CloudRunExecuteJobOperator(
         task_id='trigger_bronze_car',
         project_id=GCP_PROJECT_ID, # Replace with your ID
-        region='asia-southeast1',
+        region=DATAFORM_REGION,
         job_name='bronze-car-ingestion',
         gcp_conn_id='google_cloud_default',
         overrides={
@@ -56,7 +62,7 @@ with DAG(
     run_mevnet_job = CloudRunExecuteJobOperator(
         task_id='trigger_bronze_mevnet',
         project_id=GCP_PROJECT_ID, # Replace with your ID
-        region='asia-southeast1',
+        region=DATAFORM_REGION,
         job_name='bronze-mevnet-ingestion',
         gcp_conn_id='google_cloud_default',
         overrides={
@@ -74,6 +80,28 @@ with DAG(
         dag=dag,
     )
 
-    # 5. THE WORKFLOW (THE "BITSHIFT")
+    # --- SILVER & GOLD LAYER (Dataform Automation) ---
+    
+    # 5. Compile the Dataform code from your 'main' branch
+    compile_dataform = DataformCreateCompilationResultOperator(
+        task_id="compile_dataform",
+        project_id=GCP_PROJECT_ID,
+        region=DATAFORM_REGION,
+        repository_id=DATAFORM_REPOSITORY_ID,
+        compilation_result={"git_commitish": "main"},
+    )
+
+    # 6. Invoke the transformation (Runs Silver + Gold)
+    execute_dataform = DataformCreateWorkflowInvocationOperator(
+        task_id="execute_dataform_workflow",
+        project_id=GCP_PROJECT_ID,
+        region=DATAFORM_REGION,
+        repository_id=DATAFORM_REPOSITORY_ID,
+        workflow_invocation={
+            "compilation_result": "{{ task_instance.xcom_pull(task_ids='compile_dataform')['name'] }}"
+        },
+    )
+
+    # 7. THE WORKFLOW (THE "BITSHIFT")
     # Both can run at the same time (in parallel)
-    [run_car_job, run_mevnet_job]
+    [run_car_job, run_mevnet_job] >> compile_dataform >> execute_dataform
