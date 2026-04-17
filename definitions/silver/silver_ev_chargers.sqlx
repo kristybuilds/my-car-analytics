@@ -15,8 +15,8 @@ WITH raw_chargers AS (
         INITCAP(LOWER(TRIM(state))) AS state,
         status,
         TRIM(category) AS location_category,
-        SAFE_CAST(NULLIF(longitude, '0') AS FLOAT64) AS longitude,
-        SAFE_CAST(NULLIF(latitude, '0') AS FLOAT64) AS latitude,
+        SAFE_CAST(NULLIF(longitude, 0) AS FLOAT64) AS longitude,
+        SAFE_CAST(NULLIF(latitude, 0) AS FLOAT64) AS latitude,
         SAFE.PARSE_DATE('%d-%b-%y', NULLIF(CAST(data_as AS STRING), '0')) AS date_added, 
         
         COALESCE(SAFE_CAST(number_of_existing_ev_charger_s AS INT64), 0) AS existing_plugs,

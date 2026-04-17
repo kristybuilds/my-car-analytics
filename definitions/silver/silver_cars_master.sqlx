@@ -47,9 +47,9 @@ SELECT
     CURRENT_TIMESTAMP AS silver_processed_at
     
 FROM ${ref("cars_all")}
-GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 WHERE
     date_reg IS NOT NULL, 
     state IS NOT NULL, 
     maker IS NOT NULL, 
     model IS NOT NULL
+GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
