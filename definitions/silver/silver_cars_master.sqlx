@@ -10,7 +10,7 @@ config {
 
 SELECT
     GENERATE_UUID() as id,
-    SAFE_CAST(date_reg AS DATE) AS registration_date,
+    SAFE_CAST(date_reg AS DATE) AS registration_date, 
     EXTRACT(YEAR FROM SAFE_CAST(date_reg AS DATE)) AS reg_year,
     EXTRACT(MONTH FROM SAFE_CAST(date_reg AS DATE)) AS reg_month,
     SAFE.DATE_TRUNC(SAFE_CAST(date_reg AS DATE), MONTH) AS registration_period,
