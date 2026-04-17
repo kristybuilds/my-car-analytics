@@ -14,7 +14,7 @@ WITH latest_cars AS (
         MAX(report_month) AS car_data_as_of, 
         -- This counts EVERY car in the silver_cars_ev table for that state
         COUNT(*) AS total_bevs 
-    FROM ${("silver_cars_ev")}
+    FROM ${ref("silver_cars_ev")}
     GROUP BY state
 ),
 charger_stats AS (
