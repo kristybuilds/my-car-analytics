@@ -11,7 +11,7 @@ WITH latest_cars AS (
     SELECT 
         state,
         -- This grabs the date of the absolute last registration for the label
-        MAX(report_month) AS car_data_as_of, 
+        MAX(registration_period) AS car_data_as_of, 
         -- This counts EVERY car in the silver_cars_ev table for that state
         COUNT(*) AS total_bevs 
     FROM ${ref("silver_cars_ev")}
