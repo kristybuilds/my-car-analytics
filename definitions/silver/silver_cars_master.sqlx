@@ -9,7 +9,6 @@ config {
 }
 
 SELECT
-    GENERATE_UUID() as id,
     SAFE_CAST(date_reg AS DATE) AS registration_date, 
     EXTRACT(YEAR FROM SAFE_CAST(date_reg AS DATE)) AS reg_year,
     EXTRACT(MONTH FROM SAFE_CAST(date_reg AS DATE)) AS reg_month,
@@ -48,8 +47,8 @@ SELECT
     
 FROM ${ref("cars_all")}
 WHERE
-    date_reg IS NOT NULL, 
-    state IS NOT NULL, 
-    maker IS NOT NULL, 
+    date_reg IS NOT NULL AND 
+    state IS NOT NULL AND
+    maker IS NOT NULL AND
     model IS NOT NULL
 GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
