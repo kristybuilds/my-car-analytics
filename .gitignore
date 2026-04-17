@@ -14,8 +14,10 @@ credentials.json
 # Terraform
 .terraform/
 *.tfstate
+*.tfstate.*
 *.tfstate.backup
 *.tfvars
+*.tfvars.json
 # Note: If you named your var file terraform.tfvars, it is covered above.
 
 # OS files
@@ -24,4 +26,8 @@ credentials.json
 # Airflow files
 airflow/logs/
 
+#Dataform workspace
 node_modules/
+
+# Log files
+*.log
