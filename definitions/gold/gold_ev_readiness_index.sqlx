@@ -28,7 +28,26 @@ charger_stats AS (
     WHERE is_operational = TRUE
     GROUP BY 1
 )
-SELECT 
+SELECT
+    CASE 
+      WHEN c.state = 'Johor' THEN 'MY-01'
+      WHEN c.state = 'Kedah' THEN 'MY-02'
+      WHEN c.state = 'Kelantan' THEN 'MY-03'
+      WHEN c.state = 'Melaka' THEN 'MY-04'
+      WHEN c.state = 'Negeri Sembilan' THEN 'MY-05'
+      WHEN c.state = 'Pahang' THEN 'MY-06'
+      WHEN c.state = 'Pulau Pinang' THEN 'MY-07'
+      WHEN c.state = 'Perak' THEN 'MY-08'
+      WHEN c.state = 'Perlis' THEN 'MY-09'
+      WHEN c.state = 'Selangor' THEN 'MY-10'
+      WHEN c.state = 'Terengganu' THEN 'MY-11'
+      WHEN c.state = 'Sabah' THEN 'MY-12'
+      WHEN c.state = 'Sarawak' THEN 'MY-13'
+      WHEN c.state = 'W.P. Kuala Lumpur' THEN 'MY-14'
+      WHEN c.state = 'W.P. Labuan' THEN 'MY-15'
+      WHEN c.state = 'W.P. Putrajaya' THEN 'MY-16'
+      ELSE NULL
+    END AS state_iso_code,
     c.state,
     c.car_data_as_of,
     c.total_bevs,
