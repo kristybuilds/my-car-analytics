@@ -3,7 +3,7 @@ config {
   schema: "silver",
   description: "Master aggregation of vehicle registrations by month, brand, and sustainability tier.",
   assertions: {
-    nonNull: ["date_reg", "state", "maker", "model"]
+    nonNull: ["registration_date", "state", "brand", "model"]
   },
   tags: ["silver"]
 }

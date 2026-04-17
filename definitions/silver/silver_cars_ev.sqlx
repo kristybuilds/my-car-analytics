@@ -3,7 +3,7 @@ config {
   schema: "silver",
   description: "Cleaned EV registration data for Malaysia.",
   assertions: {
-    nonNull: ["date_reg", "state", "maker", "model"]
+    nonNull: ["registration_date", "state", "brand", "model"]
   }
 }
 
