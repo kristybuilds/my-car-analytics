@@ -59,4 +59,4 @@ SELECT
     CURRENT_TIMESTAMP AS silver_processed_at
     
 FROM raw_chargers
-WHERE longitude IS NOT NULL AND latitude IS NOT NULL;
+WHERE longitude IS NOT NULL AND latitude IS NOT NULL

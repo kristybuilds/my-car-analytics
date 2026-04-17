@@ -32,4 +32,4 @@ SELECT
     DENSE_RANK() OVER (PARTITION BY state, reg_year, fuel ORDER BY SUM(unit_count) DESC) AS rank_in_fuel_type
 
 FROM ${ref("silver_cars_master")}
-GROUP BY 1, 2, 3, 4, 5, 6, 7;
+GROUP BY 1, 2, 3, 4, 5, 6, 7
