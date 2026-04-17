@@ -1,0 +1,5 @@
+defaultProject: malaysia-ev-analysis
+defaultLocation: asia-southeast1
+defaultDataset: silver
+defaultAssertionDataset: dataform_assertions
+dataformCoreVersion: 3.0.0-beta.4
