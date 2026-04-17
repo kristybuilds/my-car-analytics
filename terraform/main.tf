@@ -13,6 +13,12 @@ provider "google" {
   # Credentials removed: Terraform will use 'gcloud auth application-default login'
 }
 
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+  # Credentials removed: Terraform will use 'gcloud auth application-default login'
+}
+
 data "google_project" "project" {}
 
 # --- 1. SERVICE ACCOUNT & IAM ---
@@ -161,11 +167,12 @@ resource "google_cloud_run_v2_job" "bronze_mevnet_ingestion" {
 resource "google_project_service" "dataform_api" {
   project = var.project_id
   service = "dataform.googleapis.com"
-  disable_on_redeploy = false
+  disable_on_destroy = false
 }
 
 # The Repository linked to GitHub
 resource "google_dataform_repository" "ev_analysis_repo" {
+  provider = google-beta
   name     = "malaysia-ev-analysis"
   region   = var.region
   project  = var.project_id
@@ -190,8 +197,14 @@ resource "google_dataform_repository" "ev_analysis_repo" {
 
 # --- 6. GITHUB AUTHENTICATION (SECRET MANAGER) ---
 
+resource "google_project_service" "secretmanager_api" {
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_secret_manager_secret" "github_token" {
   secret_id = "github-token"
+  depends_on = [google_project_service.secretmanager_api]
   replication {
     auto {}
   }
@@ -215,8 +228,15 @@ resource "google_project_iam_member" "dataform_bq_admin" {
   member  = "serviceAccount:${google_service_account.dataform_executor.email}"
 }
 
+resource "google_project_service_identity" "dataform_sa" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "dataform.googleapis.com"
+}
+
 # Critical: Allow the Google-managed Dataform service agent to read the secret
 resource "google_secret_manager_secret_iam_member" "dataform_secret_accessor" {
+  depends_on = [google_project_service_identity.dataform_sa]
   secret_id = google_secret_manager_secret.github_token.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
