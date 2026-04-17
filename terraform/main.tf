@@ -241,3 +241,17 @@ resource "google_secret_manager_secret_iam_member" "dataform_secret_accessor" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
 }
+
+# The "Handshake": Allow Dataform to impersonate your executor account
+resource "google_service_account_iam_member" "dataform_impersonation" {
+  service_account_id = google_service_account.dataform_executor.name
+  role               = "roles/iam.serviceAccountUser"
+  # This is the Google-managed "Service Agent" for Dataform
+  member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
+}
+
+resource "google_service_account_iam_member" "dataform_token_creator" {
+  service_account_id = google_service_account.dataform_executor.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
+}
