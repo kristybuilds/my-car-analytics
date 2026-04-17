@@ -45,4 +45,4 @@ SELECT
   
 FROM latest_cars c
 LEFT JOIN charger_stats i ON c.state = i.state
-ORDER BY ev_per_plug_ratio DESC;
+ORDER BY ev_per_plug_ratio DESC

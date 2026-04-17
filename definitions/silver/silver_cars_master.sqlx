@@ -52,4 +52,4 @@ WHERE
     date_reg IS NOT NULL, 
     state IS NOT NULL, 
     maker IS NOT NULL, 
-    model IS NOT NULL;
+    model IS NOT NULL

@@ -22,4 +22,4 @@ SELECT
     -- Metadata for tracking
     CURRENT_TIMESTAMP AS silver_processed_at
 FROM ${ref("cars_all")}
-WHERE LOWER(fuel) = 'electric';
+WHERE LOWER(fuel) = 'electric'
