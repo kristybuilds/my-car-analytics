@@ -124,6 +124,11 @@ resource "google_bigquery_dataset" "gold" {
   location   = var.region
 }
 
+resource "google_bigquery_dataset" "dataform_assertions" {
+  dataset_id = "dataform_assertions"
+  location   = var.region
+}
+
 # --- 4. CLOUD RUN JOBS ---
 
 # Car Ingestion Job
@@ -319,6 +324,7 @@ resource "google_bigquery_dataset_iam_member" "dataform_dataset_editor" {
   depends_on = [
     google_bigquery_dataset.bronze,
     google_bigquery_dataset.silver,
-    google_bigquery_dataset.gold
+    google_bigquery_dataset.gold,
+    google_bigquery_dataset.dataform_assertions
   ]
 }
