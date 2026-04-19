@@ -52,7 +52,7 @@ x-airflow-common:
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.2.0}
   # build: .
   env_file:
-    - ${ENV_FILE_PATH:-.env}
+    - .env
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -66,11 +66,15 @@ x-airflow-common:
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-airflow_jwt_secret}
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
+
     GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+    GOOGLE_CLOUD_PROJECT: ${GCP_PROJECT_ID}
     GCP_GCS_BUCKET: ${GCP_GCS_BUCKET}
+    URL_DATA: ${URL_DATA}
+
     DATAFORM_REGION: ${DATAFORM_REGION}
     DATAFORM_REPOSITORY_ID: ${DATAFORM_REPOSITORY_ID}
-    GOOGLE_CLOUD_PROJECT: ${GCPP_PROJECT_ID}
+
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud://?project_id=${GCP_PROJECT_ID}'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
@@ -126,11 +130,18 @@ services:
       start_period: 30s
     restart: always
 
+  airflow-webserver:
+      <<: *airflow-common
+      command: webserver
+      ports:
+        - "8081:8080"
+      restart: always
+
   airflow-apiserver:
     <<: *airflow-common
     command: api-server
     ports:
-      - "8080:8080"
+      - "8082:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
       interval: 30s

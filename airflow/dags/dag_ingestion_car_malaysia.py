@@ -5,12 +5,13 @@ from airflow.providers.google.cloud.operators.dataform import (
     DataformCreateCompilationResultOperator,
     DataformCreateWorkflowInvocationOperator,
 )
+from airflow.models import Variable
 from datetime import datetime, timedelta
 
-GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
-GCP_GCS_BUCKET = os.environ.get("GCP_GCS_BUCKET")
-DATAFORM_REGION = os.environ.get("DATAFORM_REGION")
-DATAFORM_REPOSITORY_ID = os.environ.get("DATAFORM_REPOSITORY_ID") # Update this! "your-dataform-repo-name"
+GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or Variable.get("GCP_PROJECT_ID")
+GCP_GCS_BUCKET = os.environ.get("GCP_GCS_BUCKET") or Variable.get("GCP_GCS_BUCKET")
+DATAFORM_REGION = os.environ.get("DATAFORM_REGION") or Variable.get("DATAFORM_REGION")
+DATAFORM_REPOSITORY_ID = os.environ.get("DATAFORM_REPOSITORY_ID") or Variable.get("DATAFORM_REPOSITORY_ID")
 
 # 1. DEFAULT ARGUMENTS
 # This defines how Airflow behaves if a task fails
