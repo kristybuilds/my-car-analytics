@@ -93,7 +93,7 @@ resource "null_resource" "docker_push" {
   provisioner "local-exec" {
     command = <<EOT
       gcloud auth configure-docker ${var.region}-docker.pkg.dev --quiet
-      docker build -t ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest ./ingestion
+      docker build -t ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest ${path.module}/../ingestion
       docker push ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest
     EOT
   }
@@ -314,4 +314,11 @@ resource "google_bigquery_dataset_iam_member" "dataform_dataset_editor" {
   dataset_id = each.key
   role       = "roles/bigquery.dataEditor"
   member     = "serviceAccount:${google_service_account.dataform_executor.email}"
+
+  # Add this to prevent the 404 errors
+  depends_on = [
+    google_bigquery_dataset.bronze,
+    google_bigquery_dataset.silver,
+    google_bigquery_dataset.gold
+  ]
 }
