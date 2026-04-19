@@ -66,9 +66,12 @@ x-airflow-common:
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-airflow_jwt_secret}
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
-    GCP_PROJECT_ID: 'malaysia-ev-analysis'
-    GOOGLE_CLOUD_PROJECT: 'malaysia-ev-analysis'
-    AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud://?project_id=malaysia-ev-analysis'
+    GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+    GCP_GCS_BUCKET: ${GCP_GCS_BUCKET}
+    DATAFORM_REGION: ${DATAFORM_REGION}
+    DATAFORM_REPOSITORY_ID: ${DATAFORM_REPOSITORY_ID}
+    GOOGLE_CLOUD_PROJECT: ${GCPP_PROJECT_ID}
+    AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud://?project_id=${GCP_PROJECT_ID}'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server

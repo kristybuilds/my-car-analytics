@@ -11,16 +11,6 @@ MEVNET_URL = os.environ.get('MEVNET_API_URL')
 GCP_GCS_BUCKET = os.environ.get('GCP_GCS_BUCKET')
 DESTINATION_TABLE = f"{GCP_PROJECT_ID}.bronze.mevnet_chargers"
 
-def delete_current_sync_data(bq_client, run_date):
-    """Idempotency: Cleans up records from the current day."""
-    day_str = run_date.strftime('%Y-%m-%d')
-    print(f"🧹 Cleaning up existing records for {day_str}...")
-    query = f"DELETE FROM `{DESTINATION_TABLE}` WHERE DATE(bronze_ingested_at) = '{day_str}'"
-    try:
-        bq_client.query(query).result()
-    except Exception as e:
-        print(f"Note: Cleanup skipped (table may be new): {e}")
-
 def fetch_mevnet_data():
     """Fetches records from API with pagination."""
     all_rows = []
@@ -81,12 +71,10 @@ def run():
         blob.upload_from_file(buffer, content_type='application/octet-stream')
 
         # --- STAGE 2: LOAD TO BIGQUERY ---
-        # Cleanup today's run to avoid duplicates
-        delete_current_sync_data(bq_client, run_time)
 
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.PARQUET,
-            write_disposition="WRITE_APPEND",
+            write_disposition="WRITE_TRUNCATE",
             autodetect=True,
             # Daily partitioning based on ingestion time
             time_partitioning=bigquery.TimePartitioning(

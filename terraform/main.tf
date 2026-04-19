@@ -70,6 +70,35 @@ resource "google_project_iam_member" "gcr_reader" {
   member  = "serviceAccount:${google_service_account.airflow_orchestrator.email}"
 }
 
+# --- ARTIFACT REGISTRY ---
+
+resource "google_artifact_registry_repository" "ingestion_repo" {
+  location      = var.region
+  repository_id = "ev-ingestion-images"
+  description   = "Docker repository for EV ingestion microservices"
+  format        = "DOCKER"
+}
+
+resource "null_resource" "docker_push" {
+  # Trigger this whenever the project ID or region changes
+  triggers = {
+    project_id = var.project_id
+    region     = var.region
+    # This ensures it reruns if you change your Python code
+    code_hash  = base64sha256("${path.module}/ingestion/bronze_cars_all.py") 
+  }
+
+  depends_on = [google_artifact_registry_repository.ingestion_repo]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      gcloud auth configure-docker ${var.region}-docker.pkg.dev --quiet
+      docker build -t ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest ./ingestion
+      docker push ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest
+    EOT
+  }
+}
+
 # --- 2. STORAGE BUCKET (THE DATA LAKE) ---
 
 resource "google_storage_bucket" "malaysia_ev_data_lake" {
@@ -102,11 +131,18 @@ resource "google_cloud_run_v2_job" "bronze_car_ingestion" {
   name     = "bronze-car-ingestion"
   location = var.region
 
+  # CRITICAL: Wait for the image to be pushed before creating the job
+  depends_on = [null_resource.docker_push]
+
   template {
     template {
       containers {
-        image = "gcr.io/${var.project_id}/ingestion-car-malaysia:latest"
+        image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest"
         
+        # OVERRIDE: Run the Car Script
+        command = ["python"]
+        args    = ["bronze_cars_all.py"]
+
         env {
           name  = "GCP_PROJECT_ID"
           value = var.project_id
@@ -134,11 +170,18 @@ resource "google_cloud_run_v2_job" "bronze_mevnet_ingestion" {
   name     = "bronze-mevnet-ingestion"
   location = var.region
 
+  # CRITICAL: Wait for the image to be pushed before creating the job
+  depends_on = [null_resource.docker_push]
+
   template {
     template {
       containers {
-        image = "gcr.io/${var.project_id}/ingestion-car-malaysia:latest"
+        image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.ingestion_repo.repository_id}/ingestion-car-malaysia:latest"
         
+        # OVERRIDE: Run the MEVnet Script
+        command = ["python"]
+        args    = ["bronze_mevnetchargers.py"]
+
         env {
           name  = "GCP_PROJECT_ID"
           value = var.project_id

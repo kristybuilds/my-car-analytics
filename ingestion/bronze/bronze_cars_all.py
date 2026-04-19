@@ -73,7 +73,7 @@ def run_ingestion_pipeline():
             # If it's the first run, it creates it with these settings:
             job_config = bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.PARQUET,
-                write_disposition="WRITE_APPEND",
+                write_disposition="WRITE_TRUNCATE",
                 autodetect=True,
                 time_partitioning=bigquery.TimePartitioning(
                     type_=bigquery.TimePartitioningType.YEAR,
