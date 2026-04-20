@@ -22,6 +22,7 @@ def get_existing_years(bq_client):
         return []
 
 def run_ingestion_pipeline():
+    print("***")
     if not all([GCP_PROJECT_ID, URL_DATA, GCP_GCS_BUCKET]):
         print("ERROR: Missing environment variables.")
         return
