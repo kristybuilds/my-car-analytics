@@ -54,6 +54,89 @@ This project uses a hybrid cloud approach. Airflow is hosted locally via Docker 
 
 ---
 
+## Pre-Requisites
+Before starting the setup, ensure you have the following accounts and tools configured:
+
+**1. Cloud & Infrastructure**
+Google Cloud Platform (GCP) Account: You must have an active GCP project with billing enabled. To run this project without incurring personal costs, you can take advantage of the Google Cloud Free Trial:
+
+    *$300 Free Credits: New Google Cloud users are eligible for $300 in free credits valid for 90 days. This is more than enough to deploy this entire pipeline, process the 15 million rows, and run the Airflow orchestration multiple times.
+
+    *No "Surprise" Billing: Google will not automatically charge you after your credits run out or the 90 days end; you must manually upgrade to a paid account to continue using the resources.
+
+    *Free Tier Resources: Beyond the credits, services like BigQuery (first 1TB of queries/month) and Cloud Run have "Always Free" usage limits that this project fits within for small-scale testing.
+
+    **Note: You will still need to provide a credit card or bank account for identity verification during sign-up, but Google uses this only to confirm you aren't a bot.**
+
+Required APIs: Ensure the following APIs are enabled in your Google Cloud Console:
+
+    *Compute Engine API
+    *BigQuery API
+    *Cloud Run Admin API
+    *Artifact Registry API
+    *Dataform API
+    *Terraform CLI: Installed on your local machine (v1.5.0 or higher recommended).
+
+**2. Development Environment**
+*WSL2 (Windows users): It is highly recommended to run this project within a Linux distribution (e.g., Ubuntu) via WSL2.
+*Docker Desktop: Necessary for building the ingestion container and running local Airflow instances.
+*Python 3.9+: Ensure Python is installed along with pip for managing dependencies.
+
+**3. Accounts & Access**
+*GitHub Account: To fork the repository and generate a Personal Access Token (PAT) for image builds.
+*Google Cloud SDK (gcloud): Installed and initialized on your local machine.
+
+## Reproducibility
+
+### 1. Fork my-car-analytics & .env File Creation
+You may fork and clone this repo into your local. Afterwards, create a file named .env in the airflow folder and project root. The .env root is for Cloud/Local Python and the other .env file is for Docker Infrastructure. ***Do not commit the actual .env file to version control***
+
+**Example: .env in airflow/ folder**
+
+    AIRFLOW_UID=1000
+
+    #GCP
+    GCP_PROJECT_ID="your-gcp-project-id"
+    GCP_GCS_BUCKET="your-gcs-bucket-name"
+    DATAFORM_REGION="asia-southeast1"
+    DATAFORM_REPOSITORY_ID="your-dataform-repo-id"
+
+    #Airflow
+    AIRFLOW_VAR_GCP_PROJECT_ID="your-gcp-project-id"
+    AIRFLOW_VAR_GCP_GCS_BUCKET="your-gcs-bucket-name"
+    AIRFLOW_VAR_DATAFORM_REGION="asia-southeast1"
+    AIRFLOW_VAR_DATAFORM_REPOSITORY_ID="your-dataform-repo-id"
+
+    #Datasource
+    URL_DATA="https://storage.data.gov.my/transportation/cars_{}.parquet"
+    MEVNET_API_URL="https://gisdev.planmalaysia.gov.my/server/rest/services/Hosted/MEVnet_EVCB/FeatureServer/0/query"
+
+**Example: .env in root**
+    #Datasource
+    URL_DATA="https://storage.data.gov.my/transportation/cars_{}.parquet"
+    MEVNET_API_URL="https://gisdev.planmalaysia.gov.my/server/rest/services/Hosted/MEVnet_EVCB/FeatureServer/0/query"
+
+    # GCP Credentials
+    GCP_PROJECT_ID="your-gcp-project-id"
+    GCP_SERVICE_ACCOUNT_PATH="credentials.json"
+
+### 2. .tfvars File Creation
+Create a terraform.tfvars file inside the terraform/ folder. To generate your GitHub PAT, navigate to Developer settings in GitHub and select Personal access tokens (Tokens (classic)).
+
+Note: GitHub only shows the token once. If you lose it, you must regenerate a new one.
+
+In your terraform.tfvars file, include:
+
+    github_pat = "ghp_your_secret_pat_token_here"
+    github_repo_url = "https://github.com/your-username/my-car-analytics.git"
+
+### 3. Google Cloud SDK (gcloud)
+Ensure you have the Google Cloud SDK (gcloud) installed in your local environment. This SDK is used as the primary authentication and management layer to allow Service Account impersonation for Terraform and provide the Docker credential helper necessary to push the containerized ingestion script to the Google Artifact Registry.
+
+After installation, authenticate your local environment by running the following command in your terminal:
+
+***run gcloud auth application-default login***
+
 ## 🚀 Setup & Deployment
 
 ### 1. Infrastructure (Terraform)
