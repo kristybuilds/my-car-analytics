@@ -1,5 +1,7 @@
 # ⚡ Malaysia Car Analytics Pipeline
 
+<img width="996" height="766" alt="Looker_Studio_my-car-analytics" src="https://github.com/user-attachments/assets/fff97b43-3668-443a-bd9f-170c95026fcb" />
+
 **Problem Statement: Bridging the "EV Insight Gap" in Malaysia**
 
 As a Malaysian observer, I found it difficult to move beyond anecdotal evidence (e.g., "charging is only easy in the Klang Valley") to find data-driven answers to these critical questions:
@@ -140,6 +142,9 @@ Ensure you have the Google Cloud SDK (gcloud) installed in your local environmen
 After installation, authenticate your local environment by running the following command in your terminal:
 
     gcloud auth application-default login
+
+### 4. Looker Studio Setup
+To replicate this dashboard, click the dashboard link, select 'Make a Copy,' and point the data source to your own BigQuery Gold table.
 
 ## 🚀 Setup & Deployment
 
