@@ -136,6 +136,13 @@ In your terraform.tfvars file, include:
     github_pat = "ghp_your_secret_pat_token_here"
     github_repo_url = "https://github.com/your-username/my-car-analytics.git"
 
+### 3. Copy Airflow Configuration File Under airflow/config/ Folder
+Copy the config template provided from the fork:
+    cp airflow/config/airflow.cfg.example airflow/config/airflow.cfg
+
+Generate a Fernet Key and paste it into airflow.cfg:
+    python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
 ### 3. Google Cloud SDK (gcloud)
 Ensure you have the Google Cloud SDK (gcloud) installed in your local environment. This SDK is used as the primary authentication and management layer to allow Service Account impersonation for Terraform and provide the Docker credential helper necessary to push the containerized ingestion script to the Google Artifact Registry.
 
