@@ -31,6 +31,7 @@ The core of this project is the **EV Readiness Ratio**, a ratio-based metric tha
 ---
 
 ## Architecture
+<img width="1408" height="768" src="https://github.com/user-attachments/assets/45cbb823-dd01-4faa-ad74-e1152e1a8d51" />
 
 ---
 
