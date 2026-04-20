@@ -66,7 +66,7 @@ Google Cloud Platform (GCP) Account: You must have an active GCP project with bi
 
     *Free Tier Resources: Beyond the credits, services like BigQuery (first 1TB of queries/month) and Cloud Run have "Always Free" usage limits that this project fits within for small-scale testing.
 
-    **Note: You will still need to provide a credit card or bank account for identity verification during sign-up, but Google uses this only to confirm you aren't a bot.**
+***Note: You will still need to provide a credit card or bank account for identity verification during sign-up, but Google uses this only to confirm you aren't a bot.***
 
 Required APIs: Ensure the following APIs are enabled in your Google Cloud Console:
 
@@ -78,13 +78,15 @@ Required APIs: Ensure the following APIs are enabled in your Google Cloud Consol
     *Terraform CLI: Installed on your local machine (v1.5.0 or higher recommended).
 
 **2. Development Environment**
-*WSL2 (Windows users): It is highly recommended to run this project within a Linux distribution (e.g., Ubuntu) via WSL2.
-*Docker Desktop: Necessary for building the ingestion container and running local Airflow instances.
-*Python 3.9+: Ensure Python is installed along with pip for managing dependencies.
+
+    *WSL2 (Windows users): It is highly recommended to run this project within a Linux distribution (e.g., Ubuntu) via WSL2.
+    *Docker Desktop: Necessary for building the ingestion container and running local Airflow instances.
+    *Python 3.9+: Ensure Python is installed along with pip for managing dependencies.
 
 **3. Accounts & Access**
-*GitHub Account: To fork the repository and generate a Personal Access Token (PAT) for image builds.
-*Google Cloud SDK (gcloud): Installed and initialized on your local machine.
+
+    *GitHub Account: To fork the repository and generate a Personal Access Token (PAT) for image builds.
+    *Google Cloud SDK (gcloud): Installed and initialized on your local machine.
 
 ## Reproducibility
 
@@ -112,6 +114,7 @@ You may fork and clone this repo into your local. Afterwards, create a file name
     MEVNET_API_URL="https://gisdev.planmalaysia.gov.my/server/rest/services/Hosted/MEVnet_EVCB/FeatureServer/0/query"
 
 **Example: .env in root**
+
     #Datasource
     URL_DATA="https://storage.data.gov.my/transportation/cars_{}.parquet"
     MEVNET_API_URL="https://gisdev.planmalaysia.gov.my/server/rest/services/Hosted/MEVnet_EVCB/FeatureServer/0/query"
