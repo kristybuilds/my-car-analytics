@@ -60,33 +60,33 @@ Before starting the setup, ensure you have the following accounts and tools conf
 **1. Cloud & Infrastructure**
 Google Cloud Platform (GCP) Account: You must have an active GCP project with billing enabled. To run this project without incurring personal costs, you can take advantage of the Google Cloud Free Trial:
 
-    *$300 Free Credits: New Google Cloud users are eligible for $300 in free credits valid for 90 days. This is more than enough to deploy this entire pipeline, process the 15 million rows, and run the Airflow orchestration multiple times.
+* $300 Free Credits: New Google Cloud users are eligible for $300 in free credits valid for 90 days. This is more than enough to deploy this entire pipeline, process the 15 million rows, and run the Airflow orchestration multiple times.
 
-    *No "Surprise" Billing: Google will not automatically charge you after your credits run out or the 90 days end; you must manually upgrade to a paid account to continue using the resources.
+* No "Surprise" Billing: Google will not automatically charge you after your credits run out or the 90 days end; you must manually upgrade to a paid account to continue using the resources.
 
-    *Free Tier Resources: Beyond the credits, services like BigQuery (first 1TB of queries/month) and Cloud Run have "Always Free" usage limits that this project fits within for small-scale testing.
+* Free Tier Resources: Beyond the credits, services like BigQuery (first 1TB of queries/month) and Cloud Run have "Always Free" usage limits that this project fits within for small-scale testing.
 
 ***Note: You will still need to provide a credit card or bank account for identity verification during sign-up, but Google uses this only to confirm you aren't a bot.***
 
 Required APIs: Ensure the following APIs are enabled in your Google Cloud Console:
 
-    *Compute Engine API
-    *BigQuery API
-    *Cloud Run Admin API
-    *Artifact Registry API
-    *Dataform API
-    *Terraform CLI: Installed on your local machine (v1.5.0 or higher recommended).
+* Compute Engine API
+* BigQuery API
+* Cloud Run Admin API
+* Artifact Registry API
+* Dataform API
+* Terraform CLI: Installed on your local machine (v1.5.0 or higher recommended).
 
 **2. Development Environment**
 
-    *WSL2 (Windows users): It is highly recommended to run this project within a Linux distribution (e.g., Ubuntu) via WSL2.
-    *Docker Desktop: Necessary for building the ingestion container and running local Airflow instances.
-    *Python 3.9+: Ensure Python is installed along with pip for managing dependencies.
+* WSL2 (Windows users): It is highly recommended to run this project within a Linux distribution (e.g., Ubuntu) via WSL2.
+* Docker Desktop: Necessary for building the ingestion container and running local Airflow instances.
+* Python 3.9+: Ensure Python is installed along with pip for managing dependencies.
 
 **3. Accounts & Access**
 
-    *GitHub Account: To fork the repository and generate a Personal Access Token (PAT) for image builds.
-    *Google Cloud SDK (gcloud): Installed and initialized on your local machine.
+* GitHub Account: To fork the repository and generate a Personal Access Token (PAT) for image builds.
+* Google Cloud SDK (gcloud): Installed and initialized on your local machine.
 
 ## Reproducibility
 
@@ -138,7 +138,7 @@ Ensure you have the Google Cloud SDK (gcloud) installed in your local environmen
 
 After installation, authenticate your local environment by running the following command in your terminal:
 
-***run gcloud auth application-default login***
+    run gcloud auth application-default login
 
 ## 🚀 Setup & Deployment
 
