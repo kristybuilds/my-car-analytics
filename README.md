@@ -138,7 +138,7 @@ Ensure you have the Google Cloud SDK (gcloud) installed in your local environmen
 
 After installation, authenticate your local environment by running the following command in your terminal:
 
-    run gcloud auth application-default login
+    gcloud auth application-default login
 
 ## 🚀 Setup & Deployment
 
