@@ -140,17 +140,17 @@ In your terraform.tfvars file, include:
 Copy the config template provided from the fork:
     cp airflow/config/airflow.cfg.example airflow/config/airflow.cfg
 
-Generate a Fernet Key and paste it into airflow.cfg:
+Generate a Fernet Key and paste it into airflow.cfg in the same line as fernet_key line:
     python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 
-### 3. Google Cloud SDK (gcloud)
+### 4. Google Cloud SDK (gcloud)
 Ensure you have the Google Cloud SDK (gcloud) installed in your local environment. This SDK is used as the primary authentication and management layer to allow Service Account impersonation for Terraform and provide the Docker credential helper necessary to push the containerized ingestion script to the Google Artifact Registry.
 
 After installation, authenticate your local environment by running the following command in your terminal:
 
     gcloud auth application-default login
 
-### 4. Looker Studio Setup
+### 5. Looker Studio Setup
 To replicate this dashboard, click the dashboard link, select 'Make a Copy,' and point the data source to your own BigQuery Gold table.
 
 ## 🚀 Setup & Deployment
