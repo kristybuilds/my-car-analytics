@@ -25,6 +25,7 @@ credentials.json
 
 # Airflow files
 airflow/logs/
+airflow/config/airflow.cfg
 
 #Dataform workspace
 node_modules/
